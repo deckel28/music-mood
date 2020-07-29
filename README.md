@@ -1,5 +1,13 @@
 # music-mood
 Music mood recognition using various Audio features from a song
+## Model Demo on Google Colab
+#### mood_train.ipynb
+-Training Notebook
+#### mood_pred.ipynb
+-Evaluation and Testing Notebook
+#### word2vec.ipynb
+-An attempt to cluster the wide-ranging tags using Google News word embeddings
+
 ## configs
 	Set the default parameters for feature extraction 
 ## src 
