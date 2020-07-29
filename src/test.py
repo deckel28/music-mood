@@ -9,7 +9,6 @@ from tensorflow import keras
 
 ### Appending the configs and Feature Extraction classes
 import sys
-
 sys.path.append("./../")
 from configs import config
 
@@ -23,6 +22,11 @@ def extract_features(wav_files_dir):
     wav_files = [wav_files_dir + f for f in listdir(wav_files_dir) if
                  isfile(join(wav_files_dir, f))]
     wav_files.sort()
+
+    names = []
+    for wav_file in wav_files:
+        name = os.path.basename(wav_file)
+        names.append(name)
 
     ### Broader Features
     print('---------Extracting Higher Level Features------')
@@ -46,15 +50,14 @@ def extract_features(wav_files_dir):
         print('Tempo-', tempo)
         print('Pitch-', 'Median', pitchmed, 'Mean', pitchmean)
         print('Spectral Contrast-', freqs)
-
+        print('')
         broad_feats[i, 0] = rms
         broad_feats[i, 1] = pitchmed
         broad_feats[i, 2] = pitchmean
         broad_feats[i, 3] = tempo
         broad_feats[i, 4:12] = freqs
-        break
+        # break
 
-    print('---------BROADER FEATURES DUMPING DONE-----------')
 
     ### Low Level Features
     print('---------Extracting Lower Level Features------')
@@ -90,15 +93,13 @@ def extract_features(wav_files_dir):
         # print(mel1.shape)
         print(mfcc1.shape)
         # print(rms1.shape)
-
+        print('')
         # feats[i, 0:12, 0:len(mel1[1])] = mel1
         low_feats[i, :, :] = mfcc1
         # feats[i, 32, 0:len(rms1[0])] = rms1
-        break
+        # break
 
-    print('---------LOWER FEATURES DUMPING DONE-----------')
-
-    return low_feats
+    return low_feats, names
 
 
 ### Predictions
@@ -112,29 +113,25 @@ def predict_mood(model, dataX, thresholds):
     return y_pred, predictions
 
 
-################ Set Testing Directory ##################
-test_directory = '../data/test/'
-wav_files = [test_directory + f for f in listdir(test_directory) if
-             isfile(join(test_directory, f))]
-wav_files.sort()
-names=[]
-for wav_file in wav_files:
-    name = os.path.basename(wav_file)
-    names.append(name)
+################ MAIN ##################
+
+### Set Testing Directory
+test_directory = '../test/'
+
 ### Load the Saved Model
-model = keras.models.load_model('model.h5')
+model = keras.models.load_model('../Models/model1.h5')
 model.summary()
 
 ### Extract Features
-feats = extract_features(test_directory)
+feats, names = extract_features(test_directory)
 data_X = np.expand_dims(feats, axis=-1)
 print(data_X.shape)
 
 ### Fix Thresholds
-thresholds = [['Happy', 0.8],
+thresholds = [['Happy', 0.9],
               ['Excited', 0.5],
               ['Frantic', 0.5],
-              ['Anxious/Sad', 0.3],
+              ['Anxious/Sad', 0.2],
               ['Anger', 0.5],
               ['Calm', 0.22],
               ['Tired', 0.5],

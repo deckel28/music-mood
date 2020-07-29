@@ -12,7 +12,6 @@ import sys
 sys.path.append("../")
 from configs import config
 
-
 class GetSpectrumFeatures:
 
     def __init__(self, audio_array, sampling_rate, fft_size=None, win_length=None, window=None):

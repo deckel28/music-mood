@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
+from matplotlib import figure
 import os
 from os.path import isfile, join
 from os import listdir
@@ -17,11 +18,10 @@ from sklearn.model_selection import train_test_split
 
 ### Appending the configs and Feature Extraction classes
 import sys
-
 sys.path.append("./../")
 from configs import config
-from getfeatures import GetBroaderFeatures, GetSpectrumFeatures
 
+from getfeatures import GetBroaderFeatures, GetSpectrumFeatures
 
 ########## Encoding Labels ###########
 
@@ -42,7 +42,7 @@ def encode_labels(tags_file, tags_map):
             if newmoods_list[i][j] > 0:
                 newmoods_list[i][j] = 1
 
-    np.savetxt('./encoded_newtags_main.csv', newmoods_list, delimiter=',')
+    np.savetxt('../Dataset/encoded_newtags_main.csv', newmoods_list, delimiter=',')
     print('---------LABELS DUMPING DONE-----------')
 
     return newmoods_list
@@ -84,9 +84,9 @@ def extract_features(wav_files_dir):
         broad_feats[i, 3] = tempo
         broad_feats[i, 4:12] = freqs
         break
-    # h5f = h5py.File('../data/feats_broad_main.h5', 'w')
-    # h5f.create_dataset('dataset', data=low_feats)
-    # h5f.close()
+    h5f = h5py.File('../Dataset/feats_broad_main.h5', 'w')
+    h5f.create_dataset('dataset', data=broad_feats)
+    h5f.close()
     print('---------BROADER FEATURES DUMPING DONE-----------')
 
     ### Low Level Features
@@ -129,19 +129,19 @@ def extract_features(wav_files_dir):
         # feats[i, 32, 0:len(rms1[0])] = rms1
         break
 
+    # feats = np.vstack(broad_feats, low_feats)
+
+    h5f = h5py.File('../Dataset/feats_low_main.h5', 'w')
+    h5f.create_dataset('dataset', data=low_feats)
+    h5f.close()
+    print('---------LOWER FEATURES DUMPING DONE-----------')
+
     plt.figure(figsize=(10, 4))
     librosa.display.specshow(mfcc1, x_axis='time')
     plt.colorbar()
     plt.title('MFCC')
     plt.tight_layout()
     plt.show()
-
-    # feats = np.vstack(broad_feats, low_feats)
-
-    # h5f = h5py.File('../data/feats_low_main.h5', 'w')
-    # h5f.create_dataset('dataset', data=low_feats)
-    # h5f.close()
-    print('---------LOWER FEATURES DUMPING DONE-----------')
 
     return low_feats
 
@@ -206,30 +206,35 @@ wav_files.sort()
 print('No. of songs in directory-', len(wav_files))
 
 
-
 ### Importing the Song Features and Labels
-newmoods_list = np.genfromtxt('encoded_newtags_main.csv', delimiter=',')
-# h5f = h5py.File('../recognition/feats_emo_main.h5','r')
-# feats = h5f['dataset_1'][:]
+
+# newmoods_list = np.genfromtxt('../Dataset/encoded_newtags_main.csv', delimiter=',')
+# h5f = h5py.File('../Dataset/feats_low_main.h5','r')
+# feats = h5f['dataset'][:]
 # h5f.close()
-# h5f = h5py.File('../data/feats_broad_main.h5','r')
+# h5f = h5py.File('../Dataset/feats_broad_main.h5','r')
 # broad_feats = h5f['dataset'][:]
 # h5f.close()
 
-####### OR
 
-# ### Prepare Data
-# feats = extract_features(config.wav_files_dir)
-# newmoods_list = encode_labels('encoded_alltags_main.csv', 'newtags.csv')
+################ OR
+ 
 
-feats = np.zeros((3460,20,9762))
+### Prepare Data
+
+newmoods_list = encode_labels('../Dataset/encoded_alltags_main.csv', '../tags_data/newtags.csv')
+feats = extract_features(config.wav_files_dir)
+
+# feats = np.zeros((3460,20,9762))
 data_X = np.expand_dims(feats, axis=-1)
 print('Input Shape-', data_X.shape)
 data_Y = newmoods_list
 print('Output Shape-', data_Y.shape)
 
 IN_SHAPE = data_X.shape[1:]
-print(IN_SHAPE)
+
+print(' ')
+print('INPUT SHAPE TO THE CNN-', IN_SHAPE)
 data_X = data_X[:50]
 data_Y = data_Y[:50]
 
@@ -269,5 +274,5 @@ model.fit_generator(generator(trainX, trainY, 2),
                     validation_data=(valX, valY))
 
 ### Save Model
-model.save('model.h5')
+model.save('../Models/modelxxx.h5')
 print('--------Model Saved---------')
