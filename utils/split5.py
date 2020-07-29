@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import librosa.display
 import sys
 
-sys.path.append("./../feature_extraction")
-from features import GetSpectrumFeatures
+sys.path.append("./../src")
+from getfeatures import GetSpectrumFeatures
 
 sys.path.append("./../")
 from configs import config

@@ -51,4 +51,4 @@ for i in range(len(sarray)):
 
 df = pd.DataFrame(sarray)
 print(df)
-df.to_csv('../data/total_tags.csv', index=False)
+df.to_csv('../tags_data/total_tags.csv', index=False)

@@ -7,7 +7,8 @@ from os.path import isfile, join
 sys.path.append("./../")
 from configs import config
 
-wav_files = [config.wav_files_dir + f for f in listdir(config.wav_files_dir) if isfile(join(config.wav_files_dir, f))]
+wav_files = [config.wav_files_dir + f for f in listdir(config.wav_files_dir) 
+            if isfile(join(config.wav_files_dir, f))]
 wav_files.sort()
 
 for wav_file in wav_files:
