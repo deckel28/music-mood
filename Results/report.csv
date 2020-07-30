@@ -1,0 +1,9 @@
+Label,Precision,Recall,F1-Score,Support
+Happy,nan,0.0,nan,9.0
+Excited,nan,0.0,nan,1.0
+Frantic,nan,nan,nan,0.0
+Anxious/Sad,0.17647058823529413,0.3333333333333333,0.23076923076923078,3.0
+Anger,nan,nan,nan,0.0
+Calm,0.17647058823529413,0.3333333333333333,0.23076923076923078,3.0
+Tired,nan,nan,nan,0.0
+Sensual,0.058823529411764705,0.3333333333333333,0.1,1.0
